@@ -10,7 +10,11 @@
 #include "../test.h"
 #include "test-params.h"
 
+#include <avr/pgmspace.h>
+
 static char buff_[30];
+
+#define PRINTF(FORMAT,args...) printf_P(PSTR(FORMAT),##args)
 
 TEST_SUITE("net_test_sender");
 
@@ -23,7 +27,7 @@ recv_uc(struct unicast_conn *c, const linkaddr_t *from)
 {
   static uint8_t rec_count = 0;
 
-  printf("unicast message received from %x.%x: '%s'\n", from->u8[0], from->u8[1], (char *) packetbuf_dataptr());
+  PRINTF("unicast message received from %x.%x: '%s'\n", from->u8[0], from->u8[1], (char *) packetbuf_dataptr());
   sprintf(buff_, NET_TEST_CFG_REPLY_MSG, rec_count);
   TEST_EQUALS(strcmp((char *) packetbuf_dataptr(), buff_), 0);
 
@@ -67,7 +71,7 @@ PROCESS_THREAD(rime_unicast_sender, ev, data)
     sprintf(buff_, NET_TEST_CFG_REQUEST_MSG, idx);
     packetbuf_copyfrom(buff_ , NET_TEST_CFG_REQUEST_MSG_LEN); 
     unicast_send(&uc, &addr);
-    printf("sent: %s to %x.%x \n", buff_, addr.u8[0], addr.u8[1]  );
+    PRINTF("sent: %s to %x.%x \n", buff_, addr.u8[0], addr.u8[1]  );
   }
 
   PROCESS_END();
