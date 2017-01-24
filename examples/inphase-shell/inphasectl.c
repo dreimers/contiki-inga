@@ -8,6 +8,14 @@ const command_t available_commands[] = {
     {"list-params",    &command_list,          "\t\tList all possible params\r\n"}
 };
 
+const parameter_t available_params[] = {
+    {"param1",  BOTH,   NULL,     "\t\tparam1 description\r\n"},
+    {"param2",  GET,    NULL,     "\t\tparam2 description\r\n"},
+    {"param3",  SET,    NULL,     "\t\tparam3 description\r\n"},
+    {"param4",  BOTH,   NULL,     "\t\tparam4 description\r\n"},
+    {"param5",	NONE,   NULL,     "\t\tparam5 description\r\n"}
+};
+
 uint16_t command_input_handler(char *in, char *out, int16_t *it) {
 	/* CAUTION: input is expected to be terminated */
 
@@ -79,6 +87,12 @@ uint16_t command_set(char *args, char *out, int16_t *it) {
 
 uint16_t command_list(char *args, char *out, int16_t *it) {
 	sprintf(out, "cmd_list\n");
+
+	for(int i=0; i < PARAMS_COUNT; i++) {
+		sprintf(out, "%s%s%s\n", out, available_params[i].param,
+				available_params[i].description);
+	}
+
 	return COMMAND_OK;
 }
 

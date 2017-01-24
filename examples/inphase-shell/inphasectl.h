@@ -20,14 +20,31 @@
 #define COMMAND_COUNT (sizeof(available_commands)/sizeof(available_commands[0]))
 #define IS_COMMAND(x,y) (strncmp(x.command, y, strlen(x.command)) == 0)
 
+#define PARAMS_COUNT (sizeof(available_params)/sizeof(available_params[0]))
+
 
 uint16_t (*command_function) (char *, char *, int16_t *);
+uint8_t (*param_function) (char *, char *);
+
+enum {
+	GET,
+	SET,
+	BOTH,
+	NONE
+} typedef param_type_t;
 
 struct {
     char command[15];
     uint16_t (*command_function) (char *, char *, int16_t *);
     char description[40];
 } typedef command_t;
+
+struct {
+    char param[15];
+    param_type_t type;
+    uint8_t (*param_function) (char *, char *);
+    char description[40];
+} typedef parameter_t;
 
 uint16_t command_input_handler(char *in, char *out, int16_t *it);
 
@@ -39,5 +56,6 @@ uint16_t command_set(char *args, char *out, int16_t *it);
 uint16_t command_list(char *args, char *out, int16_t *it);
 
 extern const command_t available_commands[];
+extern const parameter_t available_params[];
 
 #endif /* INPHASECTL_H_ */
