@@ -26,12 +26,9 @@
 uint16_t (*command_function) (char *, char *, int16_t *);
 uint8_t (*param_function) (char *, char *);
 
-enum {
-	GET,
-	SET,
-	BOTH,
-	NONE
-} typedef param_type_t;
+/* Getter/Setter for parameters */
+uint8_t param_get_param1 (char *args, char *out);
+uint8_t param_set_param1 (char *args, char *out);
 
 struct {
     char command[15];
@@ -41,8 +38,8 @@ struct {
 
 struct {
     char param[15];
-    param_type_t type;
-    uint8_t (*param_function) (char *, char *);
+    uint8_t (*param_get_func) (char *, char *);
+    uint8_t (*param_set_func) (char *, char *);
     char description[40];
 } typedef parameter_t;
 

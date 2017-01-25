@@ -2,19 +2,21 @@
 
 const command_t available_commands[] = {
     {"help",           &command_help,     "\t\tLists all available commands\r\n"},
-    {"status",         &command_status,       "\t\tShows status\r\n"},
-    {"set",            &command_set,          "\t\tSet param to value\r\n"},
-    {"get",            &command_get,          "\t\tGet value of param\r\n"},
-    {"list-params",    &command_list,          "\t\tList all possible params\r\n"}
+    {"status",         &command_status,   "\t\tShows status\r\n"},
+    {"set",            &command_set,      "\t\tSet param to value\r\n"},
+    {"get",            &command_get,      "\t\tGet value of param\r\n"},
+    {"list-params",    &command_list,     "\t\tList all possible params\r\n"}
 };
 
 const parameter_t available_params[] = {
-    {"param1",  BOTH,   NULL,     "\t\tparam1 description\r\n"},
-    {"param2",  GET,    NULL,     "\t\tparam2 description\r\n"},
-    {"param3",  SET,    NULL,     "\t\tparam3 description\r\n"},
-    {"param4",  BOTH,   NULL,     "\t\tparam4 description\r\n"},
-    {"param5",	NONE,   NULL,     "\t\tparam5 description\r\n"}
+    {"param1",  &param_get_param1,   &param_set_param1,     "\t\tparam1 description\r\n"},
+    {"param2",  NULL,   NULL,     "\t\tparam2 description\r\n"},
+    {"param3",  NULL,   NULL,     "\t\tparam3 description\r\n"},
+    {"param4",  NULL,   NULL,     "\t\tparam4 description\r\n"},
+    {"param5",	NULL,   NULL,     "\t\tparam5 description\r\n"}
 };
+
+/** TODO: implement parameter callbacks **/
 
 uint16_t command_input_handler(char *in, char *out, int16_t *it) {
 	/* CAUTION: input is expected to be terminated */
@@ -70,26 +72,54 @@ uint16_t command_input_handler(char *in, char *out, int16_t *it) {
 	}
 }
 
+uint8_t param_get_param1 (char *args, char *out) {
+
+	sprintf(out, "get param1: args: %s (ignored)\n", args);
+
+	return COMMAND_OK;
+}
+
+uint8_t param_set_param1 (char *args, char *out) {
+
+	sprintf(out, "set param1: args: %s\n", args);
+
+	if((args == NULL) | (strlen(args) == 0)) {
+		sprintf(out, "%s%s", out, "no args given. Abort\n");
+		return COMMAND_FAILED;
+	}
+
+	return COMMAND_OK;
+}
+
 uint16_t command_status(char *args, char *out, int16_t *it) {
 	sprintf(out, "cmd_status\n");
 	return COMMAND_OK;
 }
 
 uint16_t command_get(char *args, char *out, int16_t *it) {
-	sprintf(out, "cmd_get\n");
-	return COMMAND_OK;
+	sprintf(out, "cmd_get [it=%d]\n", *(it));
+	if((args = strtok(args," ")) != NULL) {
+		return (*available_params[0].param_get_func)(args, out);
+	} else {
+		return COMMAND_FAILED;
+	}
+
 }
 
 uint16_t command_set(char *args, char *out, int16_t *it) {
-	sprintf(out, "cmd_set\n");
-	return COMMAND_OK;
+	sprintf(out, "cmd_set [it=%d]\n", *(it));
+	if((args = strtok(args," ")) != NULL) {
+		return (*available_params[0].param_set_func)(args, out);
+	} else {
+		return COMMAND_FAILED;
+	}
 }
 
 uint16_t command_list(char *args, char *out, int16_t *it) {
 	sprintf(out, "cmd_list\n");
 
 	for(int i=0; i < PARAMS_COUNT; i++) {
-		sprintf(out, "%s%s%s\n", out, available_params[i].param,
+		sprintf(out, "%s%s%s", out, available_params[i].param,
 				available_params[i].description);
 	}
 
