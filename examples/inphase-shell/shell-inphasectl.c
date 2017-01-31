@@ -72,7 +72,8 @@ PROCESS_THREAD(shell_inphasectl_process, ev, data)
 	  ret = command_input_handler(data, shell_output_buffer, &iterator);
 	  shell_output_str(&inphasectl_command, shell_output_buffer, "");
   } while(ret == COMMAND_CONTINUE);
-  
+
+  memset(shell_output_buffer, 0, SHELL_OUTPUT_BUFFER_SIZE);
 
   PROCESS_END();
 }
